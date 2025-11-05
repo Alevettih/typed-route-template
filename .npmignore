@@ -1,0 +1,20 @@
+# service directories
+.github
+.vscode
+.husky
+
+# sources
+src
+
+# configs
+.editorconfig
+.gitignore
+.eslintignore
+.eslintrc.json
+.prettierignore
+.prettierrc.json
+jest.config.js
+tsconfig.json
+tsconfig.spec.json
+
+node_modules
