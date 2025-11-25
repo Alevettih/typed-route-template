@@ -2,8 +2,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["jest"],
-    "esModuleInterop": true
+    "types": ["vitest/globals"]
   },
   "include": ["src/**/*.ts"]
 }

@@ -101,7 +101,7 @@ Available scripts:
 
 - `npm run build:dev` – Type-check and emit the development build.
 - `npm run build:prod` – Produce the production build.
-- `npm test` – Run the Jest test suite.
+- `npm test` – Run the Vitest test suite.
 - `npm run lint` – Lint the project with ESLint.
 - `npm run format` – Format sources with Prettier.
 

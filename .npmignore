@@ -13,7 +13,6 @@ src
 .eslintrc.json
 .prettierignore
 .prettierrc.json
-jest.config.js
 tsconfig.json
 tsconfig.spec.json
 

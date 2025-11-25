@@ -8,9 +8,8 @@
     "email": "alevettih@ya.ru"
   },
   "scripts": {
-    "build:dev": "tsc --project src/tsconfig.lib.json",
-    "build:prod": "tsc --project src/tsconfig.lib.prod.json",
-    "test": "jest",
+    "build": "tsc --project src/tsconfig.lib.json",
+    "test": "vitest run --typecheck.tsconfig src/tsconfig.spec.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,html,scss,css,json,md}\"",
@@ -18,7 +17,6 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^8.57.0",
@@ -26,12 +24,11 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "husky": "^9.1.0",
-    "jest": "^30.0.0",
     "lint-staged": "^15.2.0",
     "prettier": "^3.3.0",
-    "ts-jest": "29.4.5",
     "tslib": "^2.3.0",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.13"
   },
   "lint-staged": {
     "*.{ts,html}": [
