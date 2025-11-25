@@ -4,8 +4,9 @@
   "compilerOptions": {
     "outDir": "../dist",
     "declaration": true,
-    "declarationMap": true,
-    "inlineSources": true,
+    "declarationMap": false,
+    "sourceMap": false,
+    "inlineSources": false,
     "types": []
   },
   "include": ["public-api.ts"],
