@@ -7,6 +7,7 @@ A tiny, type-safe helper for building and reusing parameterised URL/route templa
 - Runtime API centred on a single `RouteTemplate` class.
 - Compile-time inference of required route parameters from `:param` placeholders.
 - Type-safe `interpolate` that rejects missing params before code runs.
+- **Typed `interpolate` result**: returns a template-literal string type with params substituted.
 - Ability to slice a route from any segment with a typed `get` helper.
 - Zero runtime dependencies, tree-shakeable, written in TypeScript 5.9.
 
@@ -27,11 +28,24 @@ const postRoute = new RouteTemplate('/users/:userId/posts/:postId');
 
 // ✅ Type-safe params inference: { userId: string; postId: string }
 const href = postRoute.interpolate({ userId: '42', postId: '99' });
-// -> '/users/42/posts/99'
+// -> '/users/42/posts/99' (type inferred)
 
-// ✅ Typed slicing: inferred literal 'posts/:postId'
-const detailSegment = postRoute.get(3);
+// ✅ Typed slicing: inferred literal "/users/:userId"
+const detailSegment = postRoute.get(0, 3);
 ```
+
+### Typed encoding in the return type
+
+At runtime, values are passed through `encodeURIComponent`. The return type reflects that encoding for string literals:
+
+```ts
+const searchRoute = new RouteTemplate('/search/:query');
+const url = searchRoute.interpolate({ query: 'angular router' });
+// -> typed as: "/search/angular%20router"
+```
+
+> Note: TypeScript can precisely model encoding only for string literals and a practical subset of characters.
+> If a param value is just `string` (not a literal), the resulting type will naturally widen.
 
 If you omit a required parameter, TypeScript catches it immediately:
 
@@ -55,23 +69,37 @@ new RouteTemplate('/path/:segment');
 
 Stores the template string and automatically records parameter names for later interpolation.
 
-#### `get(segmentIndex?: number): string`
+#### `get(fromIndex?: number, toIndex?: number): string`
 
-- `segmentIndex` (optional, default `0`): zero-based index of the segment to start from.
-- Returns either the entire template (when omitted or `0`) or the remaining path starting at the provided segment.
-- A conditional type `SplitAndJoin` ensures literal return types when the `segmentIndex` is known at compile time.
+- `fromIndex` (optional, default `0`): zero-based index of the segment to start from.
+- `toIndex` (optional, default is the template segment length): zero-based index to end slicing (like `Array.prototype.slice`).
+- Returns either the entire template (when omitted or `0`) or the remaining path slice.
+- A conditional type `SplitAndJoin` ensures literal return types when indices are known at compile time.
 
-#### `interpolate(params: Record<string, string>): string`
+#### `interpolate(params): string`
 
-- `params`: object containing all named parameters discovered in the template.
+- `params`: object containing all named parameters discovered in the template, inferred from `T`.
 - Returns the template with every `:param` replaced by a URI-encoded value.
-- Throws when a required value is missing or falsy.
+- Throws when a required value is missing, `null`/`undefined`, or an empty string.
+- The return type is a template-literal type `InterpolatedRoute<T, P>` that:
+  - substitutes params into the route string type, and
+  - applies `EncodeURIComponent<...>` to the substituted values in the type system.
 
-### Type Utilities
+Example:
+
+```ts
+const route = new RouteTemplate('/user/:id/avatar/:id');
+const href = route.interpolate({ id: 'abc def' });
+// -> "/user/abc%20def/avatar/abc%20def"
+```
+
+## Type Utilities
 
 While you typically interact only with `RouteTemplate`, the package also exposes advanced literal types that power its inference:
 
 - `ExtractRouteParams<T>` converts a template string into an object type containing all parameter names.
+- `InterpolatedRoute<Template, Params>` produces the typed interpolated route string.
+- `EncodeURIComponent<S>` type-level approximation of `encodeURIComponent` for string literals.
 - `Split`, `Slice`, and `Join` are internal building blocks that let `get` return precise literal slices.
 - `MergeIntersection<T>` is a helper that normalises intersections of inferred types.
 
@@ -84,8 +112,9 @@ Calling `interpolate` with missing values throws a descriptive error (`Param <na
 ## Usage Tips
 
 - Keep template strings literal (e.g. `const route = new RouteTemplate('/foo/:bar')`) so TypeScript can infer parameter objects accurately.
+- For best literal inference of the **result**, pass params as an object literal (no extra `as const` needed in typical cases).
 - When working with frameworks like Express, Remix, or Angular, store your route templates centrally and let handlers extract both the typed params and human-friendly URLs from a single source of truth.
-- Because values are URI-encoded automatically, you can safely interpolate query-like strings or values containing spaces.
+- Because values are URI-encoded automatically, you can safely interpolate strings containing spaces and reserved characters.
 
 ## Development
 
@@ -112,5 +141,3 @@ Bug reports and pull requests are welcome on GitHub. Please include tests when f
 ## License
 
 MIT © Alexandr Tikhonenko
-
-# @alevettih/typed-route-template

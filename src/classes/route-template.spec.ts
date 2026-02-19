@@ -21,8 +21,8 @@ describe('RouteTemplate', () => {
     });
     it('should return route part from fromIndex to toIndex', () => {
       const route = new RouteTemplate(`/user/:userId/post/:postId`);
-      const result = route.get(2, 4);
-      expect(result).toBe(':userId/post');
+      const result = route.get(0, 3);
+      expect(result).toBe('/user/:userId');
     });
   });
 
