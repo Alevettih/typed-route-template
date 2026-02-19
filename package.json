@@ -1,7 +1,7 @@
 {
   "name": "@alevettih/typed-route-template",
   "description": "A tiny, type-safe helper for building and reusing parameterised URL/route templates in TypeScript. It keeps your runtime API simple while leveraging modern template literal types to prevent mismatched parameters at compile time.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "homepage": "https://github.com/Alevettih/typed-route-template",
   "author": {
     "name": "Alexandr Tikhonenko",
