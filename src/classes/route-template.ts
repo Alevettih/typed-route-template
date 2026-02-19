@@ -14,12 +14,15 @@ export class RouteTemplate<T extends string> {
         ?.map((param: string): string => param.slice(1)) ?? [];
   }
 
-  public get<I extends number = 0>(segmentIndex?: I): SplitAndJoin<T, I> {
+  public get<From extends number = 0, To extends number = 0>(
+    fromIndex?: From,
+    toIndex?: To,
+  ): SplitAndJoin<T, From, To> {
     return (
-      segmentIndex
-        ? this.#template.split('/').splice(segmentIndex).join('/')
+      fromIndex
+        ? this.#template.split('/').slice(fromIndex, toIndex).join('/')
         : this.#template
-    ) as SplitAndJoin<T, I>;
+    ) as SplitAndJoin<T, From, To>;
   }
 
   public interpolate(params: MergeIntersection<ExtractRouteParams<T>>): string {

@@ -4,20 +4,25 @@ import { RouteTemplate } from './route-template';
 
 describe('RouteTemplate', () => {
   describe('from', () => {
-    it('should return full route when segmentIndex is 0', () => {
+    it('should return full route when fromIndex is 0', () => {
       const route = new RouteTemplate(`/user/:userId/post/:postId`);
       const result = route.get(0);
       expect(result).toBe('/user/:userId/post/:postId');
     });
-    it('should return full route when segmentIndex is not defined', () => {
+    it('should return full route when fromIndex is not defined', () => {
       const route = new RouteTemplate(`/user/:userId/post/:postId`);
       const result = route.get();
       expect(result).toBe('/user/:userId/post/:postId');
     });
-    it('should return route part from segmentIndex', () => {
+    it('should return route part from fromIndex', () => {
       const route = new RouteTemplate(`/user/:userId/post/:postId`);
       const result = route.get(3);
       expect(result).toBe('post/:postId');
+    });
+    it('should return route part from fromIndex to toIndex', () => {
+      const route = new RouteTemplate(`/user/:userId/post/:postId`);
+      const result = route.get(2, 4);
+      expect(result).toBe(':userId/post');
     });
   });
 
