@@ -1,8 +1,10 @@
 import { type ExtractRouteParams } from '../types/extract-route-params.type';
+import { type InterpolatedRoute } from '../types/interpolated-route.type';
 import { type MergeIntersection } from '../types/merge-intersection.type';
 import { type SplitAndJoin } from '../types/split-and-join.type';
+import { type Split } from '../types/split.type';
 
-export class RouteTemplate<T extends string> {
+export class RouteTemplate<const T extends string> {
   readonly #template: T;
   readonly #paramNames: string[];
 
@@ -14,24 +16,25 @@ export class RouteTemplate<T extends string> {
         ?.map((param: string): string => param.slice(1)) ?? [];
   }
 
-  public get<From extends number = 0, To extends number = 0>(
-    fromIndex?: From,
-    toIndex?: To,
-  ): SplitAndJoin<T, From, To> {
+  public get<
+    From extends number = 0,
+    To extends number = Split<T, '/'>['length'],
+  >(fromIndex?: From, toIndex?: To): SplitAndJoin<T, From, To> {
     return (
-      fromIndex
+      typeof fromIndex === 'number'
         ? this.#template.split('/').slice(fromIndex, toIndex).join('/')
         : this.#template
     ) as SplitAndJoin<T, From, To>;
   }
 
-  public interpolate(params: MergeIntersection<ExtractRouteParams<T>>): string {
+  public interpolate<
+    const P extends MergeIntersection<ExtractRouteParams<T>> &
+      Record<string, string>,
+  >(params: P): InterpolatedRoute<T, P> {
     let result: string = this.#template as string;
 
     for (const paramName of this.#paramNames) {
-      const param: MergeIntersection<
-        ExtractRouteParams<T>
-      >[keyof typeof params] = params[paramName as keyof typeof params];
+      const param = params[paramName as keyof P];
 
       if (!param) {
         throw new Error(`Param ${paramName} is not defined`);
@@ -39,9 +42,10 @@ export class RouteTemplate<T extends string> {
 
       result = result.replace(
         new RegExp(`:${paramName}(?=\\/|$)`, 'g'),
-        encodeURIComponent(param as string),
+        encodeURIComponent(String(param)),
       );
     }
-    return result;
+
+    return result as InterpolatedRoute<T, P>;
   }
 }

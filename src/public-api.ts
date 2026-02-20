@@ -1,5 +1,7 @@
 export { RouteTemplate } from './classes/route-template';
 
+export { type EncodeURIComponent } from './types/encode-uri-component.type';
+export { type InterpolatedRoute } from './types/interpolated-route.type';
 export { type ExtractRouteParams } from './types/extract-route-params.type';
 export { type Join } from './types/join.type';
 export { type MergeIntersection } from './types/merge-intersection.type';
